@@ -73,4 +73,7 @@ void FootNoMoveDetc(void);
 void MotoProtectDelay(void);
 void HeadMotoSTOP(void);
 void FootMotoSTOP(void);
+void HeadHallFunc(void);
+void FootHallFunc(void);
+
 #endif /* HEADANDFOOT_H_ */

@@ -7,13 +7,13 @@
 
 /*
  *
- * Date 2019 09/01
+ * Date 2019 09/12
+ *
+ * Version V1.0912
  *
  */
 
 void MainFunction(uint16_t func);
-
-uint8_t a[2];
 uint16_t ShakeDuty = 512 - 1;
 uint16_t NowFunc;
 
@@ -70,24 +70,10 @@ void main(void){
     	KeyProc();
     	//RfDataSend(0xAC);
 #else
-    	IiCFirstByteWrite(IIC_ADDW, 0x25);
-    	IiCNextByteWrite(0x80);
-    	IiCFinishByteWrite(0x80);
-    	IiCFirstByteWrite(IIC_ADDW, 0x00);
-    	IiCNextByteWrite(0x40);
-    	IiCFinishByteWrite(0x0A);
-		a[0] = 0x00;
-		a[1] = 0x00;
-		while(1){
-			IiCRead(0x16, a, 2);
-			if(a[1] & 0x40){
-				break;
-			}
-		}
-		a[0] = 0x00;
-		a[1] = 0x00;
-		IiCRead(0x28, a, 2);
-		MainFunction(a[1]);
+    	RfSeqence();
+    	HeadNoMoveDetc();
+    	FootNoMoveDetc();
+
 #if RF_TEST
 		P4OUT |= BIT1 | BIT2 | BIT3 | BIT4 | BIT5;
 		P8OUT |= BIT1;
@@ -104,6 +90,7 @@ void main(void){
 }
 #if IIC_MODE
 #else
+
 void MainFunction(uint16_t func){
 	NowFunc = func;
 	switch(NowFunc){

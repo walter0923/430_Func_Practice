@@ -301,6 +301,36 @@ void RfDataSend(uint8_t data) {
 	}
 }
 
+void RfSeqence(void){
+    static uint16_t rfstep = 1;
+    uint8_t a[2] = {0};
+
+    switch(rfstep){
+        case 1:
+            IiCFirstByteWrite(IIC_ADDW, 0x25);
+            IiCNextByteWrite(0x80);
+            IiCFinishByteWrite(0x80);
+            IiCFirstByteWrite(IIC_ADDW, 0x00);
+            IiCNextByteWrite(0x40);
+            IiCFinishByteWrite(0x0A);
+            rfstep = 2;
+            break;
+
+        case 2:
+            IiCRead(0x16, a, 2);
+            if((a[1] & 0x40) || (a[1] != 0xFF)){
+                rfstep = 3;
+            }
+            break;
+
+        case 3:
+            IiCRead(0x28, a, 2);
+            MainFunction(a[1]);
+            rfstep = 1;
+            break;
+    }
+}
+
 void RfCleanFIFO(void){
 	IiCFirstByteWrite(IIC_ADDW, 0x26);		//
 	IiCNextByteWrite(0x80);
