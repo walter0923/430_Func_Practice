@@ -173,7 +173,7 @@ void FootMotoSTOP(void){
 }
 
 void HeadHallFunc(void){
-    if(P1IN & HeadStepCntPin){
+    //if(P1IN & HeadStepCntPin){
         HeadStepTC1ms = 0;
         if(HeadLastMotion == UP){
             HeadNowPosition ++;
@@ -189,12 +189,12 @@ void HeadHallFunc(void){
                 //NowFunc = 0;
             }
         }
-    }
+    //}
     HeadStepTC1ms = 0;
 }
 
 void FootHallFunc(void){
-    if(P2IN & FootStepCntPin){
+    //if(P2IN & FootStepCntPin){
         FootStepTC1ms = 0;
         if(FootLastMotion == UP){
             FootNowPosition ++;
@@ -209,7 +209,7 @@ void FootHallFunc(void){
                 FootMotoSTOP();
             }
         }
-    }
+   //}
     FootStepTC1ms = 0;
 }
 
@@ -219,7 +219,7 @@ __interrupt void Port_1(void){
 	if(P1IFG & HeadStepCntPin){
 	    //HeadStepTC1ms = 0;
 	    HeadHallFunc();
-		FootHallFunc();
+		//FootHallFunc();
 		//HeadNowPotition += HeadStepCnt;
 	}
 	//HeadStepTC1ms = 0;
@@ -231,7 +231,7 @@ __interrupt void Port_2(void){
 	if(P2IFG & FootStepCntPin){
 	    //FootStepTC1ms = 0;
 	    FootHallFunc();
-	    HeadHallFunc();
+	    //HeadHallFunc();
 		//HeadNowPotition += HeadStepCnt;
 	}
 	//FootStepTC1ms = 0;
