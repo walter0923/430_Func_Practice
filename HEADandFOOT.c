@@ -52,8 +52,8 @@ void FootInit(void){
 
 void HeadSetpCntInit(void){
 	P1DIR &= ~HeadStepCntPin;
-	P1REN |= HeadStepCntPin;                            // Enable P1.4 internal resistance
-	P1OUT |= HeadStepCntPin;                            // Set P1.4 as pull-Up resistance
+	//P1REN |= HeadStepCntPin;                            // Enable P1.4 internal resistance
+	//P1OUT |= HeadStepCntPin;                            // Set P1.4 as pull-Up resistance
 	P1IE  |= HeadStepCntPin;                             // P1.4 interrupt enabled
 	P1IES &= ~HeadStepCntPin;                            // P1.4 Hi/Lo edge
 	P1IFG &= ~HeadStepCntPin;                           // P1.4 IFG cleared
@@ -69,25 +69,21 @@ void FootSetpCntInit(void){
 }
 
 void HeadNoMoveDetc(void){
-    if(HNMD_Flag == 1){
-        if(HeadStepTC1ms > 1000){
-            HeadMotoSTOP();			//stop move
-            HeadDeadPoint = 1;
-            NowFunc = 0;
-            HNMD_Flag = 0;
-        }
-    }
+	if(HeadStepTC1ms > 300){
+		HeadMotoSTOP();			//stop move
+		HeadDeadPoint = 1;
+		NowFunc = 0;
+		HNMD_Flag = 0;
+	}
 }
 
 void FootNoMoveDetc(void){
-    if(FNMD_Flag == 1){
-        if(FootStepTC1ms > 1000){
-            FootMotoSTOP();			//stop move
-            FootDeadPoint = 1;
-            NowFunc = 0;
-            FNMD_Flag = 0;
-        }
-    }
+	if(FootStepTC1ms > 300){
+		FootMotoSTOP();			//stop move
+		FootDeadPoint = 1;
+		NowFunc = 0;
+		FNMD_Flag = 0;
+	}
 }
 
 void HeadUpDown(uint8_t ud){
@@ -110,9 +106,8 @@ void HeadUpDown(uint8_t ud){
 	}
 
 	if(ud){
-	    P1OUT |= HeadDownPin;
+		P1OUT |= HeadDownPin;
 		P1OUT &= ~HeadUpPin;
-		//
 	}else{
 		P1OUT |= HeadUpPin;
 		P1OUT &= ~HeadDownPin;
@@ -141,7 +136,7 @@ void FootUpDown(uint8_t ud){
 	}
 
 	if(ud){
-	    P2OUT |= FootDownPin;
+		P2OUT |= FootDownPin;
 		P2OUT &= ~FootUpPin;
 	}else{
 		P2OUT |= FootUpPin;
@@ -172,68 +167,50 @@ void FootMotoSTOP(void){
 	P2OUT |= FootGrup;			//make sure motor not move
 }
 
-void HeadHallFunc(void){
-    //if(P1IN & HeadStepCntPin){
-        HeadStepTC1ms = 0;
-        if(HeadLastMotion == UP){
-            HeadNowPosition ++;
-        }else if(HeadLastMotion == DOWN){
-            if(HeadNowPosition > 0){
-                HeadNowPosition --;
-            }
-        }
-
-        if(NowFunc != ZERO){
-            if(HeadNowPosition == HeadTargetPosition){
-                HeadMotoSTOP();
-                //NowFunc = 0;
-            }
-        }
-    //}
-    HeadStepTC1ms = 0;
-}
-
-void FootHallFunc(void){
-    //if(P2IN & FootStepCntPin){
-        FootStepTC1ms = 0;
-        if(FootLastMotion == UP){
-            FootNowPosition ++;
-        }else if(FootLastMotion == DOWN){
-            if(FootNowPosition > 0){
-                FootNowPosition --;
-            }
-        }
-
-        if(NowFunc != ZERO){
-            if(FootNowPosition == FootTargetPosition){
-                FootMotoSTOP();
-            }
-        }
-   //}
-    FootStepTC1ms = 0;
-}
-
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1(void){
-    P1IFG &= ~HeadStepCntPin;
 	if(P1IFG & HeadStepCntPin){
-	    //HeadStepTC1ms = 0;
-	    HeadHallFunc();
-		//FootHallFunc();
+		HeadStepTC1ms = 0;
+		if(HeadLastMotion == UP){
+			HeadNowPosition ++;
+		}else if(HeadLastMotion == DOWN){
+			if(HeadNowPosition > 0){
+				HeadNowPosition --;
+			}
+		}
+
+		if(NowFunc != ZERO){
+			if(HeadNowPosition == HeadTargetPosition){
+				HeadMotoSTOP();
+				//NowFunc = 0;
+			}
+		}
 		//HeadNowPotition += HeadStepCnt;
+		P1IFG &= ~HeadStepCntPin;                           // P1.4 IFG cleared
 	}
-	//HeadStepTC1ms = 0;
+	HeadStepTC1ms = 0;
 }
 
 #pragma vector=PORT2_VECTOR
 __interrupt void Port_2(void){
-    P2IFG &= ~FootStepCntPin;
 	if(P2IFG & FootStepCntPin){
-	    //FootStepTC1ms = 0;
-	    FootHallFunc();
-	    //HeadHallFunc();
-		//HeadNowPotition += HeadStepCnt;
-	}
-	//FootStepTC1ms = 0;
+		FootStepTC1ms = 0;
+		if(FootLastMotion == UP){
+			FootNowPosition ++;
+		}else if(FootLastMotion == DOWN){
+			if(FootNowPosition > 0){
+				FootNowPosition --;
+			}
+		}
 
+		if(NowFunc != ZERO){
+			if(FootNowPosition == FootTargetPosition){
+				FootMotoSTOP();
+			}
+		}
+
+		//HeadNowPotition += HeadStepCnt;
+		P2IFG &= ~FootStepCntPin;                           // P1.4 IFG cleared
+	}
+	FootStepTC1ms = 0;
 }

@@ -45,31 +45,31 @@ void GLight(void){
 }
 
 void ShakeInit(void){
-	P3DIR |= BIT3;                            // P2.2 and P2.3 output
-	P3SEL |= BIT3;                            // P2.2 and P2.3 options select
+	P2DIR |= BIT1;                            // P2.2 and P2.3 output
+	P2SEL |= BIT1;                            // P2.2 and P2.3 options select
 	//P8OUT |= BIT4;
 	TA1CCR0 = 51-1;                          // PWM Period
-	TA1CCTL2 = OUTMOD_7;                      // CCR1 reset/set
-	TA1CCR2 = 51 - 1;                            // CCR1 PWM duty cycle
+	TA1CCTL1 = OUTMOD_7;                      // CCR1 reset/set
+	TA1CCR1 = 51 - 1;                            // CCR1 PWM duty cycle
 	TA1CTL = TASSEL_2 + MC_1 + TACLR;         // SMCLK, up mode, clear TAR
 }
 
 void Shake_Off(void){
 	DutyStep = 1;
 	ShakeDuty = 51 - 1;
-	TA1CCR2 = ShakeDuty;
+	TA1CCR1 = ShakeDuty;
 	//Timer_A_setCompareValue(TIMER_A0_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_4, ShakeDuty);
 }
 
 void Shake_On(void){
 	switch(DutyStep){
 		case 1:
-			ShakeDuty = 18;
+			ShakeDuty = 5;
 			DutyStep = 2;
 			break;
 
 		case 2:
-			ShakeDuty = 7;
+			ShakeDuty = 4;
 			DutyStep = 3;
 			break;
 
@@ -79,5 +79,5 @@ void Shake_On(void){
 			break;
 	}
 	//Timer_A_setCompareValue(TIMER_A0_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_4, ShakeDuty);
-	TA1CCR2 = ShakeDuty;
+	TA1CCR1 = ShakeDuty;
 }

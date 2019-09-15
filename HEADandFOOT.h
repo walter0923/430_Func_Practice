@@ -24,7 +24,7 @@
 #endif
 
 #define HeadGrup (HeadUpPin | HeadDownPin)
-#define HeadStepCntPin BIT0
+#define HeadStepCntPin BIT1
 
 #if prototype
 #define FootUpPin	BIT6
@@ -57,7 +57,9 @@ extern uint16_t FootNowPosition;
 extern uint16_t HeadTargetPosition;
 extern uint16_t FootTargetPosition;
 extern uint16_t HeadDeadPoint;
-extern uint16_t FootDeadpoint;
+extern uint16_t FootDeadPoint;
+extern uint8_t HNMD_Flag;
+extern uint8_t FNMD_Flag;
 
 void HeadSetpCntInit(void);
 void HeadFootInit(void);
@@ -73,7 +75,4 @@ void FootNoMoveDetc(void);
 void MotoProtectDelay(void);
 void HeadMotoSTOP(void);
 void FootMotoSTOP(void);
-void HeadHallFunc(void);
-void FootHallFunc(void);
-
 #endif /* HEADANDFOOT_H_ */

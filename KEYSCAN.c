@@ -110,23 +110,22 @@ void ScanDelay10us(uint16_t Cnt) {
 __interrupt void TIMERA0_ISR(void) {
 	TC++;
 	IicCnt++;
-	HeadStepTC10us ++;
-	FootStepTC10us ++;
-
-	if (HeadStepTC10us >= 100) {
+	if ((HeadStepTC10us++) >= 100) {
 		HeadStepTC10us = 0;
 		HeadStepTC1ms++;
-		/*if ((NowFunc == ZG) || (NowFunc == TV) || (NowFunc == HEAD_UP) || (NowFunc == HEAD_DOWN) || (NowFunc == FLAT) || (NowFunc == ZERO)) {
+		//if ((NowFunc == ZG) || (NowFunc == TV) || (NowFunc == HEAD_UP) || (NowFunc == HEAD_DOWN) || (NowFunc == FLAT) || (NowFunc == ZERO)) {
+		if(HNMD_Flag == 1){
 			HeadNoMoveDetc();	//30ms no set not cnt shout down head & foor motor
-		}*/
+		}
 	}
 
-	if (FootStepTC10us >= 100) {
+	if ((FootStepTC10us++) >= 100) {
 		FootStepTC10us = 0;
 		FootStepTC1ms++;
-		/*if ((NowFunc == ZG) || (NowFunc == TV) || (NowFunc == FOOT_UP) || (NowFunc == FOOT_DOWN) || (NowFunc == FLAT) || (NowFunc == ZERO)) {
+		//if ((NowFunc == ZG) || (NowFunc == TV) || (NowFunc == FOOT_UP) || (NowFunc == FOOT_DOWN) || (NowFunc == FLAT) || (NowFunc == ZERO)) {
+		if(FNMD_Flag == 1){
 			FootNoMoveDetc();	//30ms no set not cnt shout down head & foor motor
-		}*/
+		}
 	}
 
 	TACTL &= ~TAIFG;

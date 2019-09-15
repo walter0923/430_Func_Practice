@@ -7,13 +7,16 @@
 
 /*
  *
- * Date 2019 09/12
+ * Date 2019 09/15
  *
- * Version V1.0912
+ * Version V1.0915
+ * PCB V1.3
  *
  */
 
 void MainFunction(uint16_t func);
+
+uint8_t a[2];
 uint16_t ShakeDuty = 512 - 1;
 uint16_t NowFunc;
 
@@ -70,10 +73,24 @@ void main(void){
     	KeyProc();
     	//RfDataSend(0xAC);
 #else
-    	RfSeqence();
-    	HeadNoMoveDetc();
-    	FootNoMoveDetc();
-
+    	IiCFirstByteWrite(IIC_ADDW, 0x25);
+    	IiCNextByteWrite(0x80);
+    	IiCFinishByteWrite(0x80);
+    	IiCFirstByteWrite(IIC_ADDW, 0x00);
+    	IiCNextByteWrite(0x40);
+    	IiCFinishByteWrite(0x0A);
+		a[0] = 0x00;
+		a[1] = 0x00;
+		while(1){
+			IiCRead(0x16, a, 2);
+			if((a[1] != 0xFF) && (a[1] & 0x40)){
+				break;
+			}
+		}
+		a[0] = 0x00;
+		a[1] = 0x00;
+		IiCRead(0x28, a, 2);
+		MainFunction(a[1]);
 #if RF_TEST
 		P4OUT |= BIT1 | BIT2 | BIT3 | BIT4 | BIT5;
 		P8OUT |= BIT1;
@@ -90,7 +107,6 @@ void main(void){
 }
 #if IIC_MODE
 #else
-
 void MainFunction(uint16_t func){
 	NowFunc = func;
 	switch(NowFunc){
@@ -136,15 +152,23 @@ void MainFunction(uint16_t func){
 
 		case HFOFF:
 			SaveFlag = 0;
+			HNMD_Flag = 0;
+			FNMD_Flag = 0;
 			FootMotoSTOP();
 			HeadMotoSTOP();
 			break;
 
 		case ZERO:
-			//FootNowPosition = 0;
-			//HeadNowPosition = 0;
+			SaveFlag = 0;
+			HeadDeadPoint = 0;
+			FootDeadPoint = 0;
+			HeadTargetPosition = 1429;
+			FootTargetPosition = 1429;
+			FootNowPosition = 0;
+			HeadNowPosition = 0;
 			FootUpDown(DOWN);
 			HeadUpDown(DOWN);
+			while((!HeadDeadPoint) || (!FootDeadPoint)){;}
 			break;
 
 		case TV:

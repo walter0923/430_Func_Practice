@@ -46,7 +46,5 @@ uint8_t IicReadByte(void);
 uint32_t IiCRead(uint8_t WriteAddr, uint8_t* pBuffer, uint8_t numByteToRead);
 void IicDelay10us(uint16_t Cnt);
 uint8_t IicReadByte(void);
-void RfSeqence(void);
-void MainFunction(uint16_t func);
 
 #endif /* RF_H_ */
